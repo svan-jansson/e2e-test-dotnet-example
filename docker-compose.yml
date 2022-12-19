@@ -7,12 +7,34 @@ services:
       context: .
       dockerfile: ./Dockerfile.backend
     ports:
-      - 5201:5201
+      - 5220:5220
     environment:
       - ASPNETCORE_ENVIRONMENT=E2E
-      - ASPNETCORE_URLS=http://+:5201
+      - ASPNETCORE_URLS=http://+:5220
     depends_on:
       - mongodb
+      - e2e-remote-mock
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.frontend
+    ports:
+      - 5221:5221
+    environment:
+      - REACT_APP_ENVIRONMENT=E2E
+      - PORT=5221
+    depends_on:
+      - backend
+
+  e2e-remote-mock:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.e2e-remote-mock
+    ports:
+      - 5222:5222
+    environment:
+      - PORT=5222
 
   mongodb:
     image: mongo:5.0

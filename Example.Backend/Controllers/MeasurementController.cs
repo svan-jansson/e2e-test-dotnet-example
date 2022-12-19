@@ -12,32 +12,41 @@ public class MeasurementController : ControllerBase
 
     private readonly ILogger<MeasurementController> _logger;
     private readonly IConfiguration _configuration;
+    private readonly Database _database;
 
     public MeasurementController(ILogger<MeasurementController> logger, IConfiguration configuration)
     {
         _logger = logger;
         _configuration = configuration;
+
+        var databaseUrl = _configuration.GetValue<string>("DatabaseUrl");
+        _database = new Database(databaseUrl);
     }
 
     [HttpGet]
-    public async Task<IEnumerable<Measurement>> Get()
+    public async Task<IEnumerable<Measurement>> Get([FromQuery] bool persist = false)
     {
-        var baseUri = _configuration.GetValue<Uri>("TemperatureSensorUrl");
-        var url = new Uri(baseUri, "/v1/forecast?latitude=19.4727&longitude=-155.5921&timezone=Europe%2FBerlin&past_days=1&current_weather=true");
-
-        _logger.LogInformation($"Calling remote: {url}");
-        using var client = new HttpClient();
-        var response = await client.GetAsync(url);
-        var content = await response.Content.ReadAsStringAsync();
-
-        var parsed = JsonSerializer.Deserialize<SensorResponse>(content);
-        var measurement = new Measurement
+        if (persist)
         {
-            Time = DateTimeOffset.Now.ToUnixTimeSeconds(),
-            Temperature = parsed.CurrentWeather.Temperature
-        };
+            var baseUri = _configuration.GetValue<Uri>("TemperatureSensorUrl");
+            var url = new Uri(baseUri, "/v1/forecast?latitude=19.4727&longitude=-155.5921&timezone=Europe%2FBerlin&past_days=1&current_weather=true");
 
-        return new[] { measurement };
+            _logger.LogInformation($"Calling remote: {url}");
+            using var client = new HttpClient();
+            var response = await client.GetAsync(url);
+            var content = await response.Content.ReadAsStringAsync();
+
+            var parsed = JsonSerializer.Deserialize<SensorResponse>(content);
+            var measurement = new Measurement
+            {
+                Time = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                Temperature = parsed.CurrentWeather.Temperature
+            };
+
+            _database.StoreMeasurement(measurement);
+        }
+
+        return _database.GetMeasurements();
     }
 
     public record CurrentWeather(

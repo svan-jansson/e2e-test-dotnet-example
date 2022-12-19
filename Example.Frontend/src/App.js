@@ -68,7 +68,19 @@ const MeasurementRows = (props) => {
               {DateTime.fromSeconds(element.time).toRelative()}
             </td>
             <td align="center">{element.temperature}</td>
-            <td align="center">{dangerLevel(element.temperature)}</td>
+            <td align="center">
+              <span
+                style={{
+                  height: "10px",
+                  width: "10px",
+                  backgroundColor: dangerColor(element.temperature),
+                  borderRadius: "50%",
+                  display: "inline-block",
+                  marginRight: "5px",
+                }}
+              ></span>
+              {dangerLevel(element.temperature)}
+            </td>
           </tr>
         );
       })}
@@ -77,10 +89,19 @@ const MeasurementRows = (props) => {
 };
 
 const dangerLevel = (temperature) => {
-  if (temperature > 30) return "Moderate";
-  else if (temperature > 50) return "Start Running";
-  else if (temperature > 100) return "Eruption!";
-  else return "No danger";
+  if (temperature <= 30) return "No danger";
+  else if (temperature <= 50) return "Start packing";
+  else if (temperature <= 75) return "Start running";
+  else if (temperature <= 100) return "It's gonna blow!";
+  else return "Eruption!";
+};
+
+const dangerColor = (temperature) => {
+  if (temperature <= 30) return "green";
+  else if (temperature <= 50) return "yellow";
+  else if (temperature <= 75) return "orange";
+  else if (temperature <= 100) return "orangered";
+  else return "red";
 };
 
 export default App;

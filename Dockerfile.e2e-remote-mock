@@ -1,0 +1,9 @@
+FROM node:alpine
+
+COPY e2e-remote-mock/package*.json ./
+
+RUN npm install
+
+COPY e2e-remote-mock/. .
+
+CMD [ "node", "server.js" ]

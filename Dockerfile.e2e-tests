@@ -1,7 +1,7 @@
 FROM cypress/browsers:node16.14.0-chrome99-ff97
 WORKDIR /app
 
-COPY ./e2e-tests/package*json .
+COPY ./e2e-tests/package*json ./
 
 RUN npm install
 

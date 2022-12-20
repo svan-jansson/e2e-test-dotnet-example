@@ -19,3 +19,20 @@ npm start
 ```
 
 The app is now running!
+
+## Run E2E tests locally
+
+This will open Cypress against your locally running frontend.
+
+```bash
+cd ./e2e-tests
+npm run e2e
+```
+
+## Run E2E tests in docker-compose
+
+This script starts the Cypress test service inside the docker compose environment using `docker-compose exec`. Using headless mode.
+
+```bash
+sh ./ci-run.sh
+```

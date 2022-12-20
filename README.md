@@ -31,6 +31,13 @@ npm run e2e
 
 ## Run E2E tests in docker-compose
 
+First ensure that docker compose is running with the latest builds.
+
+```bash
+docker-compose down # if it was already started
+docker-compose up --build
+```
+
 This script starts the Cypress test service inside the docker compose environment using `docker-compose exec`. Using headless mode.
 
 ```bash

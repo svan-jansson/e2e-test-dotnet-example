@@ -2,6 +2,18 @@ version: '3'
 
 services:
 
+  frontend:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.frontend
+    ports:
+      - 5221:5221
+    environment:
+      - REACT_APP_ENVIRONMENT=E2E
+      - PORT=5221
+    depends_on:
+      - backend
+      
   backend:
     build:
       context: .
@@ -15,17 +27,14 @@ services:
       - mongodb
       - e2e-remote-mock
 
-  frontend:
+  e2e-tests:
     build:
       context: .
-      dockerfile: ./Dockerfile.frontend
-    ports:
-      - 5221:5221
+      dockerfile: ./Dockerfile.e2e-tests
     environment:
-      - REACT_APP_ENVIRONMENT=E2E
-      - PORT=5221
+      - CYPRESS_baseUrl=http://frontend:5221
     depends_on:
-      - backend
+      - frontend
 
   e2e-remote-mock:
     build:
